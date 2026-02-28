@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+
+/* Define your theme tokens */
+@theme {
+  --color-primary: #563C29;
+  --color-secondary: #3B332B;
+  --color-tertiary: #7E7367;
+  --color-quaternary: #7e7367;
+}
+
+
+
+*{
+  font-family: 'Poppins', sans-serif;
+}
