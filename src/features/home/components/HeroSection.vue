@@ -34,6 +34,6 @@
   width: 100%;
   background-position: center;
   background-size: cover;
-  background-image: url("../assets/hero-image.jpg");
+  background-image: url("../../../assets/images/hero-image.jpg");
 }
 </style>

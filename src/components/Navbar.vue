@@ -21,7 +21,7 @@ onUnmounted(() => {
   <nav
     :class="[
       'fixed top-0 left-0 w-full z-50 transition-all duration-300',
-      scrolled ? 'bg-white text-secondary' : 'bg-transparent text-white',
+      scrolled ? 'bg-bg1 text-secondary' : 'bg-transparent text-white',
     ]"
     class="fixed z-10 w-full"
   >
