@@ -1,17 +1,22 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
+import  {useAuthStore}  from "../store/useAuthStore";
 
-const router = useRouter();
+// const router = useRouter();
+
+const auth = useAuthStore();
 
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 
 const handleSubmit = () => {
+  auth.login(email.value, password.value);
   console.log("Login:", { email: email.value, password: password.value });
-  router.push("/");
 };
+
+window.auth = auth
 </script>
 
 <template>

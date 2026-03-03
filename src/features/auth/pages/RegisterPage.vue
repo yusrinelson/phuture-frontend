@@ -1,24 +1,22 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 import "primeicons/primeicons.css";
+import { useAuthStore } from "../store/useAuthStore";
 
-const router = useRouter();
+// const router = useRouter();
+
+const auth = useAuthStore();
 
 const name = ref("");
+const surname = ref("");
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 
 const handleSubmit = () => {
-  console.log("Signup:", {
-    name: name.value,
-    email: email.value,
-    password: password.value,
-  });
-
-  // Later: send to backend, then redirect
-  // router.push("/login");
+  auth.signup(name.value, surname.value, email.value, password.value);
+  // console.log("Signup:", { email: email.value, password: password.value });
 };
 </script>
 
@@ -61,15 +59,28 @@ const handleSubmit = () => {
         </p>
 
         <form @submit.prevent="handleSubmit" class="space-y-5">
-          <!-- Full Name -->
+          <!--  Name -->
           <div>
             <label class="block text-sm font-medium text-foreground mb-2">
-              Full Name
+              Name
             </label>
             <input
               type="text"
               v-model="name"
-              placeholder="Your full name"
+              placeholder="Your Name"
+              required
+              class="h-12 w-full rounded-xl border border-border bg-muted/50 px-4 focus:border-primary focus:ring-primary"
+            />
+          </div>
+          <!--  Surname -->
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">
+              Surname
+            </label>
+            <input
+              type="text"
+              v-model="surname"
+              placeholder="Your Surname"
               required
               class="h-12 w-full rounded-xl border border-border bg-muted/50 px-4 focus:border-primary focus:ring-primary"
             />
