@@ -3,20 +3,35 @@ import { ref } from "vue";
 // import { useRouter } from "vue-router";
 import "primeicons/primeicons.css";
 import { useAuthStore } from "../store/useAuthStore";
+import { useToast } from "vue-toastification";
+import { handleApiError } from "../../../utils/errorHandler";
 
 // const router = useRouter();
 
+// Pinia store
 const auth = useAuthStore();
+const toast = useToast();
 
+// Form state
 const name = ref("");
 const surname = ref("");
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 
-const handleSubmit = () => {
-  auth.signup(name.value, surname.value, email.value, password.value);
-  // console.log("Signup:", { email: email.value, password: password.value });
+// Submit signup
+const handleSubmit = async () => {
+  try {
+    await auth.signup({
+      name: name.value,
+      surname: surname.value,
+      email: email.value,
+      password: password.value,
+    });
+    toast.success("Account created successfully! You can now login.");
+  } catch (error) {
+    toast.error(handleApiError(error));
+  }
 };
 </script>
 
@@ -29,7 +44,9 @@ const handleSubmit = () => {
         alt="Phuture streetwear lifestyle"
         class="absolute inset-0 w-full h-full object-cover"
       />
-      <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
+      <div
+        class="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent"
+      />
 
       <div class="relative z-10 flex flex-col justify-end p-12 pb-16">
         <h2 class="text-4xl font-bold text-white mb-3 tracking-tight">
@@ -42,7 +59,9 @@ const handleSubmit = () => {
     </div>
 
     <!-- Right - Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 bg-background">
+    <div
+      class="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 bg-background"
+    >
       <div class="w-full max-w-md animate-fade-in">
         <!-- Logo -->
         <div class="block mb-6">
@@ -130,10 +149,16 @@ const handleSubmit = () => {
           <!-- Submit -->
           <button
             type="submit"
+            :disabled="auth.isRegistering"
             class="w-full h-12 rounded-xl text-base font-semibold bg-primary hover:opacity-90 flex items-center justify-center text-white"
           >
-            <span class="ml-2 transition-transform mr-4 ">Create Account</span>
-            <i class="pi pi-arrow-right"></i>
+            <span v-if="auth.isRegistering" class="flex items-center">
+              <i class="pi pi-spin pi-spinner mr-2"></i>
+              Creating Account...
+            </span>
+            <span v-else class="ml-2 transition-transform "
+              >Create Account <i class="pi pi-arrow-right ml-4"></i></span
+            >
           </button>
         </form>
 
@@ -166,8 +191,14 @@ const handleSubmit = () => {
 
 <style scoped>
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {

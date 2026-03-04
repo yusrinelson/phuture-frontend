@@ -1,81 +1,84 @@
 import { defineStore } from "pinia";
-import apiClient from "../../../services/apiClient";
+import authService from "../api/authService";
 import router from "../../../router";
 
 export const useAuthStore = defineStore("auth", {
-    state: () => ({
-        user:null,
-        accessToken: null, //stored in memory, not localStorage
-    }),
-    actions: {
-        // login
-        async login(email, password){
-            try{
-                const res = await apiClient.post(
-                    "/auth/login",
-                    {email, password}, 
-                    {withCredentials: true}); //only needed if backend sets cookies
+  state: () => ({
+    user: null,
+    accessToken: null,
 
-                this.user = {
-                    id: res.data._id,
-                    name: res.data.name,
-                    surname: res.data.surname,
-                    email: res.data.email,
-                    // role: res.data.user.role,
-                }
+    // loading states
+    isAuthChecking: true,
+    isLoggingIn: false,
+    isRegistering: false,
+    isLoggingOut: false,
+    isLoading: false,
+  }),
+  getters: {
+    isLoggedIn: (state) => !!state.accessToken,
+  },
+  actions: {
+    async login(payload) {
+      this.isLoggingIn = true;
+      this.isLoading = true;
+      try {
+        const res = await authService.login(payload);
+        this.user = res.user;
+        this.accessToken = res.token;
+        router.push("/");
+      } catch (error) {
+        throw error; // component handles toast
+      } finally {
+        this.isLoggingIn = false;
+        this.isLoading = false;
+      }
+    },
 
-                this.accessToken = res.data.token; //jwt access token
-                console.log("login successful",this.user);
+    async signup(payload) {
+      this.isRegistering = true;
+      this.isLoading = true;
+      try {
+        const res = await authService.signup(payload);
+        this.user = res.user;
+        this.accessToken = res.token;
+        router.push("/login");
+      } catch (error) {
+        throw error;
+      } finally {
+        this.isRegistering = false;
+        this.isLoading = false;
+      }
+    },
 
-                router.push("/"); //redirect to home page
-            } catch(error){
-                console.error("login failed", error.response?.data?.message || error.message);
-                alert(error.response?.data?.message || error.message);
-            }
-        },
-        
-        // signup
-        async signup(name, surname, email, password){
-            try{
-                const res = await apiClient.post(
-                    "/auth/signup",
-                    {email, password, name, surname},
-                    {withCredentials: true}
-                )
+    async logout() {
+      this.isLoggingOut = true;
+      this.isLoading = true;
+      try {
+        await authService.logout();
+        this.user = null;
+        this.accessToken = null;
+        router.push("/login");
+      } catch (error) {
+        throw error;
+      } finally {
+        this.isLoggingOut = false;
+        this.isLoading = false;
+      }
+    },
 
-                this.user = {
-                    id: res.data._id,
-                    name: res.data.name,
-                    surname: res.data.surname,
-                    email: res.data.email,
-                    // role: res.data.user.role,
-                }
-
-                this.accessToken = res.data.token
-                console.log("signup successful",this.user);
-
-                router.push("/login");
-            }catch(error){
-                console.error("signup failed", error.response?.data?.message || error.message);
-                alert(error.response?.data?.message || error.message);
-            }
-        },
-
-        // logout
-        async logout(){
-            try{
-                await apiClient.get("/auth/logout", {withCredentials: true});
-
-                this.user = null;
-                this.accessToken = null;
-                console.log("logout successful");
-                router.push("/login");
-            }catch(error){
-                console.error("logout failed", error.response?.data?.message || error.message);
-                alert(error.response?.data?.message || error.message);
-            }
-        }
-  
-    }
-})
-
+    async refresh() {
+      this.isAuthChecking = true;
+      try {
+        const res = await authService.refresh();
+        this.user = res.user;
+        this.accessToken = res.token;
+      } catch (error) {
+        this.user = null;
+        this.accessToken = null;
+        throw error;
+      } finally {
+        this.isAuthChecking = false;
+      }
+    },
+  },
+});

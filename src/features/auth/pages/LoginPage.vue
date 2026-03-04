@@ -1,22 +1,29 @@
 <script setup>
 import { ref } from "vue";
-// import { useRouter } from "vue-router";
-import  {useAuthStore}  from "../store/useAuthStore";
+import { useAuthStore } from "../store/useAuthStore";
+import { useToast } from "vue-toastification";
+import { handleApiError } from "../../../utils/errorHandler";
 
-// const router = useRouter();
-
+// Pinia store
 const auth = useAuthStore();
+const toast = useToast();
 
+// Form state
 const email = ref("");
 const password = ref("");
 const showPassword = ref(false);
 
-const handleSubmit = () => {
-  auth.login(email.value, password.value);
-  console.log("Login:", { email: email.value, password: password.value });
+// Submit login
+const handleSubmit = async () => {
+  try {
+    await auth.login({ email: email.value, password: password.value });
+    toast.success("Login successful!");
+  } catch (error) {
+    toast.error(handleApiError(error));
+  }
 };
 
-window.auth = auth
+window.auth = auth;
 </script>
 
 <template>
@@ -29,7 +36,6 @@ window.auth = auth
         class="absolute inset-0 w-full h-full object-cover"
       />
       <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent" />
-
       <div class="relative z-10 flex flex-col justify-end p-12 pb-16">
         <h2 class="text-4xl font-bold text-white mb-3 tracking-tight">
           Welcome Back
@@ -44,7 +50,7 @@ window.auth = auth
     <div class="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 bg-background">
       <div class="w-full max-w-md animate-fade-in">
         <!-- Logo -->
-        <div to="/" class="block mb-6">
+        <div class="block mb-6">
           <h1 class="text-3xl font-bold tracking-tight text-primary">
             PHUTURE
           </h1>
@@ -57,6 +63,7 @@ window.auth = auth
           Enter your details below to continue
         </p>
 
+        <!-- Form -->
         <form @submit.prevent="handleSubmit" class="space-y-5">
           <!-- Email -->
           <div>
@@ -85,7 +92,6 @@ window.auth = auth
                 Forgot password?
               </button>
             </div>
-
             <div class="relative">
               <input
                 :type="showPassword ? 'text' : 'password'"
@@ -94,24 +100,25 @@ window.auth = auth
                 required
                 class="h-12 w-full rounded-xl border border-border bg-muted/50 px-4 pr-12 focus:border-primary focus:ring-primary"
               />
-
               <button
                 type="button"
                 @click="showPassword = !showPassword"
                 class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-              </button>
+              ></button>
             </div>
           </div>
 
           <!-- Submit -->
           <button
+            :disabled="auth.isLoggingIn"
             type="submit"
             class="w-full h-12 rounded-xl text-base font-semibold bg-primary hover:opacity-90 flex items-center justify-center text-white"
           >
-            
-            <span class="ml-2 transition-transform mr-4 ">Sign In</span>
-            <i class="pi pi-arrow-right"></i>
+            <span v-if="auth.isLoggingIn" class="flex items-center">
+              <i class="pi pi-spin pi-spinner mr-2"></i>
+              Signing in...
+            </span>
+            <span v-else class="ml-2 transition-transform">Sign In <i class="pi pi-arrow-right ml-4"></i></span>
           </button>
         </form>
 
@@ -141,7 +148,3 @@ window.auth = auth
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
