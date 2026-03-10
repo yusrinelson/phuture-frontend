@@ -54,15 +54,20 @@ export const useAuthStore = defineStore("auth", {
       this.isLoggingOut = true;
       this.isLoading = true;
       try {
-        await authService.logout();
+        // Try to call API logout, but even if it fails, we still clear state
+        await authService.logout(this.accessToken);
+      } catch (error) {
+        console.warn("Logout request failed:", error);
+      } finally {
+        // Always clear user & token, regardless of API response
         this.user = null;
         this.accessToken = null;
-        router.push("/login");
-      } catch (error) {
-        throw error;
-      } finally {
         this.isLoggingOut = false;
         this.isLoading = false;
+
+        // redirect safely
+        router.push("/login");
+        console.log("Logged out successfully");
       }
     },
 

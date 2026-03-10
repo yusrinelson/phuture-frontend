@@ -1,7 +1,17 @@
 <script setup>
+import { computed } from "vue";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
 
 const auth = useAuthStore();
+
+const fullName = computed(() => {
+  if (!auth.user) return "";
+  return (
+    (auth.user.name?.charAt(0).toUpperCase() + auth.user.name?.slice(1)) +
+    " " +
+    (auth.user.surname?.charAt(0).toUpperCase() + auth.user.surname?.slice(1))
+  );
+});
 
 const logout = () => {
   auth.logout();
@@ -13,13 +23,8 @@ const logout = () => {
     ref="menuRef"
   >
     <div class="p-4">
-      <h4>
-        {{ auth.user.name.charAt(0).toUpperCase() + auth.user.name.slice(1) }}
-        {{
-          auth.user.surname.charAt(0).toUpperCase() + auth.user.surname.slice(1)
-        }}
-      </h4>
-      <p class="text-gray-500">
+      <h4>{{ fullName }}</h4>
+      <p v-if="auth.user" class="text-gray-500">
         {{ auth.user.email }}
       </p>
     </div>

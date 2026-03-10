@@ -1,4 +1,3 @@
-
 import apiClient from "../../../services/apiClient";
 
 const authService = {
@@ -6,7 +5,7 @@ const authService = {
     const res = await apiClient.post(
       "/auth/login",
       { email, password },
-      { withCredentials: true } // backend sets refresh token cookie
+      { withCredentials: true }, // backend sets refresh token cookie
     );
 
     return {
@@ -24,7 +23,7 @@ const authService = {
     const res = await apiClient.post(
       "/auth/signup",
       { name, surname, email, password },
-      { withCredentials: true }
+      { withCredentials: true },
     );
 
     return {
@@ -42,7 +41,7 @@ const authService = {
     const res = await apiClient.post(
       "/auth/refresh",
       {},
-      { withCredentials: true }
+      { withCredentials: true },
     );
 
     return {
@@ -56,8 +55,17 @@ const authService = {
     };
   },
 
-  async logout() {
-    await apiClient.post("/auth/logout", {}, { withCredentials: true });
+  async logout(accessToken) {
+    await apiClient.post(
+      "/auth/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      },
+    );
   },
 };
 

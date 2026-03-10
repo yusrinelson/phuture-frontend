@@ -19,12 +19,9 @@ const handleScroll = () => {
 };
 
 const userInitials = computed(() => {
-  if (!auth.user) return "";
-
-  const firstInitial = auth.user.name.charAt(0) || "";
-  const lastInitial = auth.user.surname.charAt(0) || "";
-
-  return (firstInitial + lastInitial).toUpperCase();
+  const first = auth.user?.name?.charAt(0) ?? "";
+  const last = auth.user?.surname?.charAt(0) ?? "";
+  return (first + last).toUpperCase();
 });
 
 onMounted(() => {
@@ -101,7 +98,7 @@ onUnmounted(() => {
         <i class="pi pi-shopping-cart cursor-pointer"></i>
         <i class="pi pi-user cursor-pointer"></i>Sign in
       </div> -->
-      <UserMenu v-if="showMenu"/>
+      <UserMenu v-if="showMenu && auth.user"/>
     </div>
   </nav>
 </template>
