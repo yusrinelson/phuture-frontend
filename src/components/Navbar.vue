@@ -2,9 +2,16 @@
 import "primeicons/primeicons.css";
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
+import UserMenu from "./UserMenu.vue";
 
 const auth = useAuthStore();
-// const isLoggedIn = computed(() => !!auth.user);
+
+////////toggle menu////////
+const showMenu = ref(false);
+const toggleMenu = () => {
+  showMenu.value = !showMenu.value;
+};
+//////////////////////////
 
 const scrolled = ref(false);
 const handleScroll = () => {
@@ -14,11 +21,11 @@ const handleScroll = () => {
 const userInitials = computed(() => {
   if (!auth.user) return "";
 
-  const firstInitial = auth.user.name.charAt(0) || '';
-  const lastInitial = auth.user.surname.charAt(0) || '';
+  const firstInitial = auth.user.name.charAt(0) || "";
+  const lastInitial = auth.user.surname.charAt(0) || "";
 
   return (firstInitial + lastInitial).toUpperCase();
-})
+});
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
@@ -27,7 +34,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
 });
-
 </script>
 
 <template>
@@ -53,24 +59,29 @@ onUnmounted(() => {
         <li class="cursor-pointer"><i class="pi pi-heart"></i></li>
         <li class="cursor-pointer"><i class="pi pi-shopping-cart"></i></li>
         <li v-if="auth.isAuthChecking">
-        <!-- skeleton -->
-        <span class="w-20 h-6 bg-gray-300 rounded inline-block"></span>
-      </li>
-        
+          <!-- skeleton -->
+          <span class="w-20 h-6 bg-gray-300 rounded inline-block"></span>
+        </li>
+
+        <!-- if LOGGED IN -->
         <li
           v-else-if="auth.isLoggedIn"
-          class="flex items-center justify-center h-9 w-9 rounded-full border cursor-pointer transition"
+          @click="toggleMenu"
+          class="flex items-center justify-center h-9 w-9 rounded-full border cursor-pointer transition user-section"
           :class="
             scrolled
               ? 'border-primary text-black hover:text-white hover:bg-primary'
-              : 'hover:bg-primary hover:text-white'"
+              : 'hover:bg-primary hover:text-white'
+          "
         >
           <!-- <i class="pi pi-user "></i> -->
-          <p class="text-sm font-bold">
+          <p class="text-sm font-bold user-icon">
             {{ userInitials }}
           </p>
         </li>
-        <li  v-else>
+
+        <!-- if NOT LOGGED IN -->
+        <li v-else>
           <router-link
             to="/login"
             :class="[
@@ -90,6 +101,7 @@ onUnmounted(() => {
         <i class="pi pi-shopping-cart cursor-pointer"></i>
         <i class="pi pi-user cursor-pointer"></i>Sign in
       </div> -->
+      <UserMenu v-if="showMenu"/>
     </div>
   </nav>
 </template>
