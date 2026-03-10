@@ -4,6 +4,10 @@ PHUTURE's frontend is a modern Vue 3 e-commerce interface designed to provide a 
 
 The frontend communicates with the PHUTURE backend API to handle authentication, product browsing, and user interactions.
 
+
+🌐 **Live Demo:**  
+https://phuture-frontend.vercel.app/
+
 ⚠️ Project Status  
 🚧 This project is currently under active development. New features and improvements are being added regularly.
 
