@@ -6,12 +6,20 @@ import UserMenu from "./UserMenu.vue";
 
 const auth = useAuthStore();
 
-////////toggle menu////////
+////////toggle user menu////////
 const showMenu = ref(false);
 const toggleMenu = () => {
   showMenu.value = !showMenu.value;
 };
-//////////////////////////
+///////////////////////////////
+
+//////// mobile menu /////////
+const showMobileMenu = ref(false);
+
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value;
+};
+///////////////////////////////
 
 const scrolled = ref(false);
 const handleScroll = () => {
@@ -39,68 +47,111 @@ onUnmounted(() => {
       'fixed top-0 left-0 w-full z-50 transition-all duration-300',
       scrolled ? 'bg-bg1 text-secondary' : 'bg-transparent text-white',
     ]"
-    class="fixed z-10 w-full"
   >
-    <div
-      class="flex flex-row justify-between items-center w-full px-6 py-4 bg-transparent"
-    >
-      <h1 class="cursor-pointer text-2xl font-medium">PHUTURE</h1>
-      <ul class="flex flex-row space-x-8 font-medium">
+    <div class="flex justify-between items-center w-full px-4 sm:px-6 py-4">
+
+      <!-- LEFT SECTION -->
+      <div class="flex items-center space-x-4">
+
+        <!-- Mobile Hamburger -->
+        <div
+          class="md:hidden text-xl cursor-pointer"
+          @click="toggleMobileMenu"
+        >
+          <i class="pi pi-bars"></i>
+        </div>
+
+        <h1 class="cursor-pointer text-lg sm:text-xl md:text-2xl font-medium">
+          PHUTURE
+        </h1>
+      </div>
+
+      <!-- Desktop Menu -->
+      <ul
+        class="hidden md:flex flex-row space-x-8 font-medium text-sm lg:text-base"
+      >
         <li class="cursor-pointer">HOME</li>
         <li class="cursor-pointer">SHOP</li>
         <li class="cursor-pointer">COLLECTIONS</li>
         <li class="cursor-pointer">ABOUT</li>
         <li class="cursor-pointer">CONTACT</li>
       </ul>
-      <ul class="flex flex-row items-center space-x-4 text-xl">
+
+      <!-- RIGHT SECTION -->
+      <ul class="flex items-center space-x-3 text-lg sm:text-xl">
         <li class="cursor-pointer"><i class="pi pi-heart"></i></li>
         <li class="cursor-pointer"><i class="pi pi-shopping-cart"></i></li>
+
         <li v-if="auth.isAuthChecking">
-          <!-- skeleton -->
-          <span class="w-20 h-6 bg-gray-300 rounded inline-block"></span>
+          <span class="w-16 h-5 bg-gray-300 rounded inline-block"></span>
         </li>
 
-        <!-- if LOGGED IN -->
+        <!-- Logged in -->
         <li
           v-else-if="auth.isLoggedIn"
           @click="toggleMenu"
-          class="flex items-center justify-center h-9 w-9 rounded-full border cursor-pointer transition user-section"
+          class="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full border cursor-pointer transition"
           :class="
             scrolled
               ? 'border-primary text-black hover:text-white hover:bg-primary'
               : 'hover:bg-primary hover:text-white'
           "
         >
-          <!-- <i class="pi pi-user "></i> -->
-          <p class="text-sm font-bold user-icon">
+          <p class="text-xs sm:text-sm font-bold">
             {{ userInitials }}
           </p>
         </li>
 
-        <!-- if NOT LOGGED IN -->
+        <!-- Not logged in -->
         <li v-else>
           <router-link
             to="/login"
             :class="[
-              'cursor-pointer flex row items-center p-2 px-4 border rounded-3xl transition',
+              'flex items-center p-2 px-3 sm:px-4 border rounded-3xl transition text-xs sm:text-sm',
               scrolled
                 ? 'border-primary text-black hover:text-white hover:bg-primary'
                 : 'hover:bg-primary hover:text-white',
             ]"
           >
             <i class="pi pi-user mr-2"></i>
-            <p class="text-sm">Sign in</p>
+            <p>Sign in</p>
           </router-link>
         </li>
       </ul>
-      <!-- <div class="flex flex-row space-x-4 text-xl">
-        <i class="pi pi-heart cursor-pointer"></i>
-        <i class="pi pi-shopping-cart cursor-pointer"></i>
-        <i class="pi pi-user cursor-pointer"></i>Sign in
-      </div> -->
-      <UserMenu v-if="showMenu && auth.user"/>
+
+      <UserMenu v-if="showMenu && auth.user" />
     </div>
   </nav>
+
+  <!-- MOBILE SLIDE MENU -->
+  <div
+    class="fixed top-0 left-0 h-screen w-72 bg-bg1 text-black z-50 transform transition-transform duration-300 md:hidden"
+    :class="showMobileMenu ? 'translate-x-0' : '-translate-x-full'"
+  >
+    <div class="flex justify-between items-center p-6 border-b">
+      <h2 class="font-bold text-lg">PHUTURE</h2>
+
+      <i
+        class="pi pi-times text-xl cursor-pointer"
+        @click="toggleMobileMenu"
+      ></i>
+    </div>
+
+    <ul class="flex flex-col space-y-6 p-6 font-medium text-lg">
+      <li class="cursor-pointer">HOME</li>
+      <li class="cursor-pointer">SHOP</li>
+      <li class="cursor-pointer">COLLECTIONS</li>
+      <li class="cursor-pointer">ABOUT</li>
+      <li class="cursor-pointer">CONTACT</li>
+    </ul>
+  </div>
+
+  <!-- DARK OVERLAY -->
+  <div
+    v-if="showMobileMenu"
+    class="fixed inset-0 bg-black/40 z-40 md:hidden"
+    @click="toggleMobileMenu"
+  ></div>
 </template>
 
-<style lang="scss" scoped></style>
+<style scoped></style>
