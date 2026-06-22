@@ -1,8 +1,9 @@
 <script setup>
 import "primeicons/primeicons.css";
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
 import UserMenu from "./UserMenu.vue";
+import UserAvatar from "./ui/UserAvatarIcon.vue";
 
 const auth = useAuthStore();
 
@@ -12,6 +13,10 @@ const toggleMenu = () => {
   showMenu.value = !showMenu.value;
 };
 ///////////////////////////////
+
+const closeMenu = () => {
+  showMenu.value = false;
+}
 
 //////// mobile menu /////////
 const showMobileMenu = ref(false);
@@ -25,12 +30,6 @@ const scrolled = ref(false);
 const handleScroll = () => {
   scrolled.value = window.scrollY > 100;
 };
-
-const userInitials = computed(() => {
-  const first = auth.user?.name?.charAt(0) ?? "";
-  const last = auth.user?.surname?.charAt(0) ?? "";
-  return (first + last).toUpperCase();
-});
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll);
@@ -48,7 +47,7 @@ onUnmounted(() => {
       scrolled ? 'bg-bg1 text-secondary' : 'bg-transparent text-white',
     ]"
   >
-    <div class="flex justify-between items-center w-full px-4 sm:px-6 py-4">
+    <div class="relative flex justify-between items-center w-full px-4 sm:px-6 py-4">
 
       <!-- LEFT SECTION -->
       <div class="flex items-center space-x-4">
@@ -70,8 +69,8 @@ onUnmounted(() => {
       <ul
         class="hidden md:flex flex-row space-x-8 font-medium text-sm lg:text-base"
       >
-        <li class="cursor-pointer">HOME</li>
-        <li class="cursor-pointer">SHOP</li>
+        <li class="cursor-pointer"><router-link to="/">HOME</router-link></li>
+        <li class="cursor-pointer"><router-link to="/shop">SHOP</router-link></li>
         <li class="cursor-pointer">COLLECTIONS</li>
         <li class="cursor-pointer">ABOUT</li>
         <li class="cursor-pointer">CONTACT</li>
@@ -89,17 +88,9 @@ onUnmounted(() => {
         <!-- Logged in -->
         <li
           v-else-if="auth.isLoggedIn"
-          @click="toggleMenu"
-          class="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full border cursor-pointer transition"
-          :class="
-            scrolled
-              ? 'border-primary text-black hover:text-white hover:bg-primary'
-              : 'hover:bg-primary hover:text-white'
-          "
+          @click.stop="toggleMenu"         
         >
-          <p class="text-xs sm:text-sm font-bold">
-            {{ userInitials }}
-          </p>
+          <UserAvatar :initials="auth.userInitials" :scrolled="scrolled" clickable/>
         </li>
 
         <!-- Not logged in -->
@@ -119,7 +110,7 @@ onUnmounted(() => {
         </li>
       </ul>
 
-      <UserMenu v-if="showMenu && auth.user" />
+      <UserMenu v-if="showMenu && auth.user" @close="closeMenu" />
     </div>
   </nav>
 
@@ -138,8 +129,8 @@ onUnmounted(() => {
     </div>
 
     <ul class="flex flex-col space-y-6 p-6 font-medium text-lg">
-      <li class="cursor-pointer">HOME</li>
-      <li class="cursor-pointer">SHOP</li>
+      <li class="cursor-pointer"><router-link to="/">HOME</router-link></li>
+      <li class="cursor-pointer"><router-link to="/shop">SHOP</router-link></li>
       <li class="cursor-pointer">COLLECTIONS</li>
       <li class="cursor-pointer">ABOUT</li>
       <li class="cursor-pointer">CONTACT</li>

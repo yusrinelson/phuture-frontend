@@ -1,6 +1,6 @@
 <script setup>
 import Navbar from '../components/Navbar.vue'
-// import Footer from '../components/Footer.vue'
+import Footer from '../components/Footer.vue'
 </script>
 
 <template>
@@ -10,6 +10,6 @@ import Navbar from '../components/Navbar.vue'
     <!-- This is where the page appears -->
     <router-view />
 
-    <!-- <Footer /> -->
+    <Footer />
   </div>
 </template>

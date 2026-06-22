@@ -1,30 +1,55 @@
 <script setup>
-import { computed } from "vue";
+import { computed, onUnmounted, onMounted, ref } from "vue";
 import { useAuthStore } from "../features/auth/store/useAuthStore";
+import UserAvatar from "./ui/UserAvatarIcon.vue";
 
 const auth = useAuthStore();
+const menuRef = ref(null);
+const emit = defineEmits(["close"]);
 
 const fullName = computed(() => {
   if (!auth.user) return "";
   return (
-    (auth.user.name?.charAt(0).toUpperCase() + auth.user.name?.slice(1)) +
+    auth.user.name?.charAt(0).toUpperCase() +
+    auth.user.name?.slice(1) +
     " " +
     (auth.user.surname?.charAt(0).toUpperCase() + auth.user.surname?.slice(1))
   );
 });
 
+const userInitials = computed(() => {
+  const first = auth.user?.name?.charAt(0) ?? "";
+  const last = auth.user?.surname?.charAt(0) ?? "";
+  return (first + last).toUpperCase();
+});
+
 const logout = () => {
   auth.logout();
 };
+
+const handleClickOutside = (event) => {
+  if (menuRef.value && !menuRef.value.contains(event.target)) {
+    emit("close");
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 <template>
   <div
-    class="block text-left text-gray-800 bg-white absolute right-2 top-16 w-[200px] rounded-xl"
+    class="block text-left text-gray-800 bg-white absolute z-50 right-2 top-16 w-[300px] shadow-2xl rounded-xl"
     ref="menuRef"
   >
-    <div class="p-4">
-      <h4>{{ fullName }}</h4>
-      <p v-if="auth.user" class="text-gray-500">
+    <div class="flex flex-col items-center justify-center p-4">
+      <UserAvatar :initials="auth.userInitials" :scrolled="true" size="lg"/>
+
+      <h4 class="font-semibold text-xl">{{ fullName }}</h4>
+      <p v-if="auth.user" class="text-gray-500 text-sm">
         {{ auth.user.email }}
       </p>
     </div>

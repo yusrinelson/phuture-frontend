@@ -23,3 +23,11 @@ body{
      --gradient-sand: linear-gradient(135deg, rgb(212, 168, 111) 0%, hsl(30 40% 85%) 100%);
      --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%);
 }
+
+.buttonStyle1{
+  @apply border border-quaternary py-2 px-8 rounded-md hover:bg-quaternary transition ease-in duration-300 transform hover:scale-105 cursor-pointer;
+}
+
+.buttonStyle2 {
+  @apply bg-secondary text-white py-3 px-8  rounded font-bold cursor-pointer w-full sm:w-auto transition ease-in duration-300 transform hover:scale-105; 
+}

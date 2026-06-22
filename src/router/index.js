@@ -48,6 +48,10 @@ const router = createRouter({
                 {
                     path: 'products/:id', // dynamic route
                     component: ProductDetailsPage
+                },
+                {
+                    path: 'shop',
+                    component: ProductsPage
                 }
             ]
         },
@@ -66,7 +70,7 @@ const router = createRouter({
                     component: RegisterPage
                 }
             ]
-        }
+        },
     ]
 })
 

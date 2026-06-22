@@ -15,7 +15,13 @@ export const useAuthStore = defineStore("auth", {
     isLoading: false,
   }),
   getters: {
-    isLoggedIn: (state) => !!state.accessToken,
+    isLoggedIn: (state) => !!state.user,
+
+    userInitials: (state) => {
+    const first = state.user?.name?.charAt(0) ?? "";
+    const last = state.user?.surname?.charAt(0) ?? "";
+    return (first + last).toUpperCase();
+  },
   },
   actions: {
     async login(payload) {
